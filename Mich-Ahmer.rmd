@@ -1,0 +1,66 @@
+---
+title: "Analysing a Bussiness"
+author: "Inés Hartwig"
+date: "3/14/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,message = FALSE,error=FALSE)
+#install.packages("ggplot2") +
+#install.pacakges("dplyr")
+#install Rmarkdown
+#install flextable
+library(scales)
+library(ggplot2)
+library(dplyr)
+library(anytime)
+library(flextable)
+```
+
+## R Markdown
+* text
+
+```{r}
+df <- read.csv("BA.csv")
+df <- df %>% filter(branchID =="1742" | branchID == "4071" | branchID == "5181")
+df$date <- as.Date(df$date)
+str(df)
+summary(df$sales)
+```
+
+### Total Quantity of Phones 
+
+```{r}
+sales <- df %>% select(product,sales) %>%
+  group_by(product) %>% summarise(Total = sum(sales)) 
+flextable::flextable(sales)
+
+```
+
+### Sales by Branch and Phones
+
+```{r}
+branch_sales <- df %>% group_by(product,branchID) %>%
+  summarise(Sales = sum(sales))
+
+branch_sales %>% flextable() 
+
+```
+Branch Winners
+
+* Phone: EggPhoneX| Branch: 4071 | Sales: 923
+* Phone: Milky S20 | Branch: 1211 | Sales: 1211
+* Phone: Yu Note 12 | Branch: 5181 | Sale: 846
+
+### Sales for Branch 5187 for Milky S20
+
+```{r}
+milky_sales <- df %>% filter(branchID == "5181" & product == "MilkyS20" )
+
+ggplot(milky_sales) + geom_col(aes(x=date,y=sales)) +
+  labs(title=" Branch 5181 Sales of MilkyS20 Phone")
+```
+
+
+
